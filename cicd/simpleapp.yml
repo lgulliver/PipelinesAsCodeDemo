@@ -17,6 +17,7 @@ stages:
       
     steps:
     - task: Docker@2
+      displayName: 'docker build'
       inputs:
         containerRegistry: 'Docker Hub'
         repository: '$(imageName)'
@@ -27,6 +28,7 @@ stages:
           latest
 
     - task: Docker@2
+      displayName: 'docker push'
       inputs:
         containerRegistry: 'Docker Hub'
         repository: '$(imageName)'
