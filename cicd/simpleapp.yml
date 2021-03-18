@@ -14,7 +14,7 @@ variables:
 
 stages:
 - stage: Build
-  displayName: Build, Scan and Push image
+  displayName: Build
   jobs:  
   - job: Build
     pool:
@@ -25,6 +25,13 @@ stages:
       inputs:
         containerRegistry: 'Docker Hub'
         repository: '$(imageName)'
-        command: 'buildAndPush'
+        command: 'build'
         Dockerfile: '$(System.DefaultWorkingDirectory)/src/simpleApp/Dockerfile'
+        tags: '$(Build.BuildNumber)'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'Docker Hub'
+        repository: '$(imageName)'
+        command: 'push'
         tags: '$(Build.BuildNumber)'
