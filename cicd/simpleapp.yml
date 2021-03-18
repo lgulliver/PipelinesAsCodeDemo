@@ -61,6 +61,7 @@ stages:
         addSpnToEnvironment: true
     
     - task: AzureRmWebAppDeployment@4
+      displayName: 'Deploy simpleapp:$(Build.BuildNumber)'
       inputs:
         ConnectionType: 'AzureRM'
         azureSubscription: 'VS Sub'
