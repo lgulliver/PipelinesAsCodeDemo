@@ -143,6 +143,12 @@ stages:
         DockerImageTag: '$(Build.BuildNumber)'
 ```
 
+- Deploy
+- http://lgdonedemo-prod.azurewebsites.net/
+- Update index.html
+- http://lgdonedemo-dev.azurewebsites.net/
+- Commit and wait
+
 - Add Prod stage
 
 ```yaml
@@ -183,6 +189,10 @@ stages:
         DockerImageTag: '$(Build.BuildNumber)'
 ```        
 
+- http://lgdonedemo-prod.azurewebsites.net/
+- Update index.html
+- http://lgdonedemo-prod.azurewebsites.net/
+- Commit and wait
 - Add Trivy version variable
 
 ```yaml
@@ -212,6 +222,7 @@ stages:
 ```
 
 - Show results to on screen
+- Add template file - talk about AzD supported output types
 - Output to JUnit for Trivy instead
 - Add publish test results tasks
   - Talk about conditions
