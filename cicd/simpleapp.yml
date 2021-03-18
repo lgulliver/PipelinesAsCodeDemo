@@ -20,8 +20,17 @@ stages:
       inputs:
         containerRegistry: 'Docker Hub'
         repository: '$(imageName)'
-        command: 'buildAndPush'
+        command: 'build'
         Dockerfile: '$(System.DefaultWorkingDirectory)/src/simpleApp/Dockerfile'
+        tags: |
+          $(Build.BuildNumber)
+          latest
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'Docker Hub'
+        repository: '$(imageName)'
+        command: 'push'
         tags: |
           $(Build.BuildNumber)
           latest
