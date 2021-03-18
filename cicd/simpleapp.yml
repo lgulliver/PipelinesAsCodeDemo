@@ -26,5 +26,5 @@ stages:
         containerRegistry: 'Docker Hub'
         repository: '$(imageName)'
         command: 'buildAndPush'
-        Dockerfile: 'src/simpleApp/Dockerfile'
+        Dockerfile: '$(System.DefaultWorkingDirectory)/src/simpleApp/Dockerfile'
         tags: '$(Build.BuildNumber)'
