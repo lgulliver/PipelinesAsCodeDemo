@@ -88,3 +88,93 @@ stages:
 ```        
 
 - Add display name to Docker tasks
+- Come back to docker later
+- Add stage for `dev`
+
+```yaml
+- stage: Dev
+  dependsOn: Build
+  displayName: Dev
+
+  variables:
+    environment_name: dev
+    siteName: lgdonedemo    
+  
+  jobs:  
+  - job: Deploy
+    pool:
+      vmImage: ubuntu-latest  
+```
+
+- Cover Bicep briefly
+- Show Bicep on screen
+- Add task for deploy of Bicep
+
+```yaml
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Deploy Bicep'
+      inputs:
+        azureSubscription: 'VS Sub'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az group create -l uksouth -n lg-done-$(environment_name)-rg
+          az deployment group create -f $(System.DefaultWorkingDirectory)/infrastructure/webapp-for-containers.bicep -g lg-done-$(environment_name)-rg --parameters siteName=$(siteName)-$(environment_name)
+        addSpnToEnvironment: true
+```
+
+- Add task to deploy docker container built in this run
+
+```yaml
+    - task: AzureRmWebAppDeployment@4
+      displayName: 'Deploy simpleapp:$(Build.BuildNumber)'
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'VS Sub'
+        appType: 'webAppContainer'
+        WebAppName: '$(siteName)-$(environment_name)'
+        DockerNamespace: 'liamgu'
+        DockerRepository: 'simpleapp'
+        DockerImageTag: '$(Build.BuildNumber)'
+```
+
+- Add Prod stage
+
+```yaml
+- stage: Prod
+  dependsOn: Dev
+  displayName: Prod
+
+  variables:
+    environment_name: prod
+    siteName: lgdonedemo    
+  
+  jobs:  
+  - job: Deploy
+    pool:
+      vmImage: ubuntu-latest
+  
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Deploy Bicep'
+      inputs:
+        azureSubscription: 'VS Sub'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az group create -l uksouth -n lg-done-$(environment_name)-rg
+          az deployment group create -f $(System.DefaultWorkingDirectory)/infrastructure/webapp-for-containers.bicep -g lg-done-$(environment_name)-rg --parameters siteName=$(siteName)-$(environment_name)
+        addSpnToEnvironment: true
+    
+    - task: AzureRmWebAppDeployment@4
+      displayName: 'Deploy simpleapp:$(Build.BuildNumber)'
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'VS Sub'
+        appType: 'webAppContainer'
+        WebAppName: '$(siteName)-$(environment_name)'
+        DockerNamespace: 'liamgu'
+        DockerRepository: 'simpleapp'
+        DockerImageTag: '$(Build.BuildNumber)'
+```        

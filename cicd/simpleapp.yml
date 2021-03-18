@@ -39,8 +39,8 @@ stages:
       displayName: "Run trivy scan"
       inputs:
         script: |
-            trivy image --severity LOW,MEDIUM --format template --template "@templates/junit.tpl" -o junit-report-low-med.xml $(imageName):$(Build.BuildNumber)
-            trivy image --severity HIGH,CRITICAL --format template --template "@templates/junit.tpl" -o junit-report-high-crit.xml $(imageName):$(Build.BuildNumber)
+            trivy image --severity LOW,MEDIUM --format template --template "@cicd/tools/templates/junit.tpl" -o junit-report-low-med.xml $(imageName):$(Build.BuildNumber)
+            trivy image --severity HIGH,CRITICAL --format template --template "@cicd/tools/templates/junit.tpl" -o junit-report-high-crit.xml $(imageName):$(Build.BuildNumber)
 
     - task: PublishTestResults@2
       inputs:
@@ -59,7 +59,7 @@ stages:
         failTaskOnFailedTests: true
         testRunTitle: 'Trivy - High and Critical Vulnerabilities'
       condition: 'always()'  
-          
+
     - task: Docker@2
       displayName: 'docker push'
       inputs:
