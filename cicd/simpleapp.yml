@@ -6,6 +6,7 @@ pool:
 
 variables:
   imageName: 'liamgu/simpleapp'
+  trivyVersion: 0.16.0
 
 stages:
 - stage: Build
@@ -14,7 +15,14 @@ stages:
   - job: Build
     pool:
       vmImage: ubuntu-latest
-      
+
+    - script: |
+        sudo apt-get install rpm
+        wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
+        sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
+        trivy -v
+      displayName: 'Download and install Trivy'
+
     steps:
     - task: Docker@2
       displayName: 'docker build'
@@ -26,6 +34,13 @@ stages:
         tags: |
           $(Build.BuildNumber)
           latest
+
+    - task: CmdLine@2
+      displayName: "Run trivy scan"
+      inputs:
+        script: |
+            trivy image --exit-code 0 --severity LOW,MEDIUM $(imageName):$(Build.BuildNumber)
+            trivy image --exit-code 1 --severity HIGH,CRITICAL $(imageName):$(Build.BuildNumber)
 
     - task: Docker@2
       displayName: 'docker push'
